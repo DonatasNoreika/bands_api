@@ -35,8 +35,7 @@ class AlbumReview(models.Model):
         ('10', '10/10'),
     )
 
-    score = models.CharField(
-        max_length=2,
+    score = models.IntegerField(
         choices=SCORE,
         blank=True,
         default='10',
