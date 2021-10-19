@@ -20,7 +20,7 @@ class Song(models.Model):
 class AlbumReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     album = models.ForeignKey('Album', on_delete=models.CASCADE)
-    content = name = models.TextField(verbose_name="Content", max_length=150)
+    content = models.TextField(verbose_name="Content", max_length=150)
 
     SCORE = (
         ('1', '1/10'),
@@ -36,7 +36,7 @@ class AlbumReview(models.Model):
     )
 
     score = models.CharField(
-        max_length=1,
+        max_length=2,
         choices=SCORE,
         blank=True,
         default='10',
@@ -47,7 +47,7 @@ class AlbumReview(models.Model):
 class AlbumReviewComment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     album_review = models.ForeignKey('AlbumReview', on_delete=models.CASCADE)
-    content = name = models.TextField(verbose_name="Content", max_length=150)
+    content = models.TextField(verbose_name="Content", max_length=150)
 
 
 class AlbumReviewLike(models.Model):
