@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions
+from rest_framework.exceptions import ValidationError
 from .models import (Band,
                      Album,
                      Song,
@@ -39,6 +40,25 @@ class AlbumReviewList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
+class AlbumReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AlbumReview.objects.all()
+    serializer_class = AlbumReviewSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def delete(self, request, *args, **kwargs):
+        post = AlbumReview.objects.filter(pk=kwargs['pk'], user=self.request.user)
+        if post.exists():
+            return self.destroy(request, *args, **kwargs)
+        else:
+            raise ValidationError('Negalima trinti svetimų pranešimų!')
+
+    def put(self, request, *args, **kwargs):
+        post = AlbumReview.objects.filter(pk=kwargs['pk'], user=self.request.user)
+        if post.exists():
+            return self.update(request, *args, **kwargs)
+        else:
+            raise ValidationError('Negalima koreguoti svetimų pranešimų!')
 
 class AlbumReviewCommentList(generics.ListCreateAPIView):
     queryset = AlbumReviewComment.objects.all()
