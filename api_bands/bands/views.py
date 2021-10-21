@@ -98,3 +98,22 @@ class AlbumReviewLikeList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class AlbumReviewLikeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AlbumReviewLike.objects.all()
+    serializer_class = AlbumReviewLikeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def delete(self, request, *args, **kwargs):
+        post = AlbumReviewLike.objects.filter(pk=kwargs['pk'], user=self.request.user)
+        if post.exists():
+            return self.destroy(request, *args, **kwargs)
+        else:
+            raise ValidationError('Negalima trinti svetimų laikų!')
+
+    def put(self, request, *args, **kwargs):
+        post = AlbumReviewLike.objects.filter(pk=kwargs['pk'], user=self.request.user)
+        if post.exists():
+            return self.update(request, *args, **kwargs)
+        else:
+            raise ValidationError('Negalima koreguoti svetimų laikų!')
