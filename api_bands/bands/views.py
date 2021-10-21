@@ -26,6 +26,7 @@ class AlbumList(generics.ListCreateAPIView):
     serializer_class = AlbumSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+
 class SongList(generics.ListCreateAPIView):
     queryset = Song.objects.all()
     serializer_class = SongSerializer
@@ -51,14 +52,15 @@ class AlbumReviewDetail(generics.RetrieveUpdateDestroyAPIView):
         if post.exists():
             return self.destroy(request, *args, **kwargs)
         else:
-            raise ValidationError('Negalima trinti svetimų pranešimų!')
+            raise ValidationError('Negalima trinti svetimų albumų apžvalgų!')
 
     def put(self, request, *args, **kwargs):
         post = AlbumReview.objects.filter(pk=kwargs['pk'], user=self.request.user)
         if post.exists():
             return self.update(request, *args, **kwargs)
         else:
-            raise ValidationError('Negalima koreguoti svetimų pranešimų!')
+            raise ValidationError('Negalima koreguoti svetimų albumų apžvalgų!')
+
 
 class AlbumReviewCommentList(generics.ListCreateAPIView):
     queryset = AlbumReviewComment.objects.all()
@@ -67,6 +69,26 @@ class AlbumReviewCommentList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class AlbumReviewCommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AlbumReviewComment.objects.all()
+    serializer_class = AlbumReviewCommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def delete(self, request, *args, **kwargs):
+        post = AlbumReviewComment.objects.filter(pk=kwargs['pk'], user=self.request.user)
+        if post.exists():
+            return self.destroy(request, *args, **kwargs)
+        else:
+            raise ValidationError('Negalima trinti svetimų komentarų!')
+
+    def put(self, request, *args, **kwargs):
+        post = AlbumReviewComment.objects.filter(pk=kwargs['pk'], user=self.request.user)
+        if post.exists():
+            return self.update(request, *args, **kwargs)
+        else:
+            raise ValidationError('Negalima koreguoti svetimų komentarų!')
 
 
 class AlbumReviewLikeList(generics.ListCreateAPIView):
