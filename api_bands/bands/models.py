@@ -45,10 +45,10 @@ class AlbumReview(models.Model):
 
 class AlbumReviewComment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    album_review = models.ForeignKey('AlbumReview', on_delete=models.CASCADE)
+    album_review = models.ForeignKey('AlbumReview', on_delete=models.CASCADE, related_name='comments')
     content = models.TextField(verbose_name="Content", max_length=150)
 
 
 class AlbumReviewLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    album_review = models.ForeignKey('AlbumReview', on_delete=models.CASCADE)
+    album_review = models.ForeignKey('AlbumReview', on_delete=models.CASCADE, related_name='likes')

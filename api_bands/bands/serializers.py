@@ -20,18 +20,6 @@ class SongSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'duration', 'album']
 
 
-class AlbumReviewSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-    user_id = serializers.ReadOnlyField(source='user.id')
-
-    class Meta:
-        model = AlbumReview
-        fields = ['id', 'user', 'user_id', 'album', 'content', 'score']
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
 class AlbumReviewCommentSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
     user_id = serializers.ReadOnlyField(source='user.id')
@@ -51,6 +39,27 @@ class AlbumReviewLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlbumReviewLike
         fields = ['id', 'user', 'user_id', 'album_review']
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class AlbumReviewSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    user_id = serializers.ReadOnlyField(source='user.id')
+    comments = AlbumReviewCommentSerializer(many=True)
+    comment_count = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+
+    def get_comment_count(self, obj):
+        return AlbumReviewComment.objects.filter(album_review=obj).count()
+
+    def get_likes_count(self, obj):
+        return AlbumReviewLike.objects.filter(album_review=obj).count()
+
+    class Meta:
+        model = AlbumReview
+        fields = ['id', 'user', 'user_id', 'album', 'content', 'score', 'comment_count', 'comments', 'likes_count']
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
