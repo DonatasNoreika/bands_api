@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, mixins, status
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
 from .models import (Band,
                      Album,
                      Song,
@@ -101,7 +103,7 @@ class AlbumReviewLikeList(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class AlbumReviewLikeCreate(generics.CreateAPIView):
+class AlbumReviewLikeCreate(generics.CreateAPIView, mixins.DestroyModelMixin):
     serializer_class = AlbumReviewAlternativeLikeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -116,6 +118,12 @@ class AlbumReviewLikeCreate(generics.CreateAPIView):
         review = AlbumReview.objects.get(pk=self.kwargs['pk'])
         serializer.save(user=self.request.user, album_review=review)
 
+    def delete(self, request, *args, **kwargs):
+        if self.get_queryset().exists():
+            self.get_queryset().delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            raise ValidationError('Jūs nepalikote patiktuko po šia apžvalga!')
 
 class AlbumReviewLikeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AlbumReviewLike.objects.all()
