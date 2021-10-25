@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, permissions, mixins, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from django.contrib.auth.models import User
 
 from .models import (Band,
                      Album,
@@ -15,7 +16,8 @@ from .serializers import (BandSerializer,
                           AlbumReviewSerializer,
                           AlbumReviewCommentSerializer,
                           AlbumReviewLikeSerializer,
-                          AlbumReviewAlternativeLikeSerializer)
+                          AlbumReviewAlternativeLikeSerializer,
+                          UserSerializer)
 
 
 class BandList(generics.ListCreateAPIView):
@@ -125,6 +127,7 @@ class AlbumReviewLikeCreate(generics.CreateAPIView, mixins.DestroyModelMixin):
         else:
             raise ValidationError('Jūs nepalikote patiktuko po šia apžvalga!')
 
+
 class AlbumReviewLikeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AlbumReviewLike.objects.all()
     serializer_class = AlbumReviewLikeSerializer
@@ -143,3 +146,9 @@ class AlbumReviewLikeDetail(generics.RetrieveUpdateDestroyAPIView):
             return self.update(request, *args, **kwargs)
         else:
             raise ValidationError('Negalima koreguoti svetimų laikų!')
+
+
+class UserCreate(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.AllowAny,)
