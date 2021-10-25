@@ -5,7 +5,7 @@ from .models import Band, Album, Song, AlbumReview, AlbumReviewComment, AlbumRev
 class BandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Band
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'image']
 
 
 class AlbumSerializer(serializers.ModelSerializer):
