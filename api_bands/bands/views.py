@@ -12,7 +12,8 @@ from .serializers import (BandSerializer,
                           SongSerializer,
                           AlbumReviewSerializer,
                           AlbumReviewCommentSerializer,
-                          AlbumReviewLikeSerializer)
+                          AlbumReviewLikeSerializer,
+                          AlbumReviewAlternativeLikeSerializer)
 
 
 class BandList(generics.ListCreateAPIView):
@@ -98,6 +99,23 @@ class AlbumReviewLikeList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class AlbumReviewLikeCreate(generics.CreateAPIView):
+    serializer_class = AlbumReviewAlternativeLikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        review = AlbumReview.objects.get(pk=self.kwargs['pk'])
+        return AlbumReviewLike.objects.filter(album_review=review, user=user)
+
+    def perform_create(self, serializer):
+        if self.get_queryset().exists():
+            raise ValidationError('Jūs jau palikote patiktuką šiai apžvalgai!')
+        review = AlbumReview.objects.get(pk=self.kwargs['pk'])
+        serializer.save(user=self.request.user, album_review=review)
+
 
 class AlbumReviewLikeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AlbumReviewLike.objects.all()

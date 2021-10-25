@@ -43,6 +43,11 @@ class AlbumReviewLikeSerializer(serializers.ModelSerializer):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+class AlbumReviewAlternativeLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlbumReviewLike
+        fields = ['id']
+
 
 class AlbumReviewSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
